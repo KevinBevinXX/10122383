@@ -33,7 +33,7 @@
   #player.open { display: flex; }
   #bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--card); }
   #bar strong { flex: 1; }
-  #bar button, #bar a { background: var(--tag); color: var(--text); border: 0; border-radius: 8px;
+  #bar button { background: var(--tag); color: var(--text); border: 0; border-radius: 8px;
     padding: 8px 12px; font: inherit; cursor: pointer; text-decoration: none; }
   #frame { flex: 1; border: 0; width: 100%; background: #000; }
   footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px; }
@@ -42,7 +42,7 @@
 <body>
 <header>
   <h1>🎮 Game Hub</h1>
-  <p>Popular web games in one place. Games marked ↗ open on their official site in a new tab.</p>
+  <p>Popular web games in one place. Click a game to play.</p>
   <div class="controls">
     <input id="search" type="search" placeholder="Search games…" autocomplete="off">
     <select id="cat"><option value="">All categories</option></select>
@@ -56,54 +56,44 @@
     <button id="close">← Back</button>
     <strong id="title"></strong>
     <button id="fs">Fullscreen</button>
-    <a id="newtab" target="_blank" rel="noopener">Open in new tab ↗</a>
   </div>
   <iframe id="frame" allow="fullscreen; autoplay; gamepad; pointer-lock" allowfullscreen></iframe>
 </div>
 
-<footer>Every game belongs to its developer and is played from its official site.</footer>
+<footer>Every game belongs to its developer. Games are loaded from their official sites or GameDistribution.</footer>
 
 <script>
-// embed: true = the site allows being shown in a frame; false = it blocks that, so open a new tab.
 const GAMES = [
-  { name: "Basket Bros",        emoji: "🏀", cat: "Sports",   url: "https://basketbros.io",   embed: false },
-  { name: "Football Bros",      emoji: "🏈", cat: "Sports",   url: "https://footballbros.io", embed: false },
-  { name: "Retro Bowl",         emoji: "🏟️", cat: "Sports",   url: "https://poki.com/en/g/retro-bowl", embed: false },
-  { name: "Krunker",            emoji: "🔫", cat: "Shooter",  url: "https://krunker.io",      embed: true },
-  { name: "Shell Shockers",     emoji: "🥚", cat: "Shooter",  url: "https://shellshock.io",   embed: true },
-  { name: "Venge.io",           emoji: "💥", cat: "Shooter",  url: "https://venge.io",        embed: true },
-  { name: "ZombsRoyale",        emoji: "🧟", cat: "Shooter",  url: "https://zombsroyale.io",  embed: true },
-  { name: "1v1.LOL",            emoji: "🏗️", cat: "Shooter",  url: "https://1v1.lol",         embed: false },
-  { name: "Smash Karts",        emoji: "🏎️", cat: "Racing",   url: "https://smashkarts.io",   embed: true },
-  { name: "Drift Hunters",      emoji: "🚗", cat: "Racing",   url: "https://www.crazygames.com/game/drift-hunters", embed: false },
-  { name: "Moto X3M",           emoji: "🏍️", cat: "Racing",   url: "https://poki.com/en/g/moto-x3m", embed: false },
-  { name: "Drive Mad",          emoji: "🚙", cat: "Racing",   url: "https://poki.com/en/g/drive-mad", embed: false },
-  { name: "Slither.io",         emoji: "🐍", cat: ".io",      url: "https://slither.io",      embed: true },
-  { name: "Agar.io",            emoji: "🟢", cat: ".io",      url: "https://agar.io",         embed: false },
-  { name: "Diep.io",            emoji: "🔵", cat: ".io",      url: "https://diep.io",         embed: true },
-  { name: "Paper.io 2",         emoji: "📄", cat: ".io",      url: "https://paper-io.com",    embed: true },
-  { name: "Hole.io",            emoji: "🕳️", cat: ".io",      url: "https://hole-io.com",     embed: true },
-  { name: "MooMoo.io",          emoji: "🐄", cat: ".io",      url: "https://moomoo.io",       embed: false },
-  { name: "Territorial.io",     emoji: "🗺️", cat: ".io",      url: "https://territorial.io",  embed: true },
-  { name: "Bloxd.io",           emoji: "🧱", cat: "Sandbox",  url: "https://bloxd.io",        embed: true },
-  { name: "Minecraft Classic",  emoji: "⛏️", cat: "Sandbox",  url: "https://classic.minecraft.net", embed: true },
-  { name: "Slope",              emoji: "⚪", cat: "Arcade",   url: "https://www.crazygames.com/game/slope", embed: false },
-  { name: "Subway Surfers",     emoji: "🛹", cat: "Arcade",   url: "https://poki.com/en/g/subway-surfers", embed: false },
-  { name: "Temple Run 2",       emoji: "🏃", cat: "Arcade",   url: "https://poki.com/en/g/temple-run-2", embed: false },
-  { name: "Stickman Hook",      emoji: "🪝", cat: "Arcade",   url: "https://poki.com/en/g/stickman-hook", embed: false },
-  { name: "Run 3",              emoji: "🚀", cat: "Arcade",   url: "https://www.coolmathgames.com/0-run-3", embed: false },
-  { name: "Level Devil",        emoji: "😈", cat: "Arcade",   url: "https://poki.com/en/g/level-devil", embed: false },
-  { name: "Fireboy & Watergirl",emoji: "🔥", cat: "Puzzle",   url: "https://www.coolmathgames.com/0-fireboy-and-water-girl-in-the-forest-temple", embed: false },
-  { name: "2048",               emoji: "🔢", cat: "Puzzle",   url: "https://play2048.co",     embed: false },
-  { name: "Tetris",             emoji: "🟪", cat: "Puzzle",   url: "https://tetris.com/play-tetris", embed: true },
-  { name: "Wordle",             emoji: "🟩", cat: "Puzzle",   url: "https://www.nytimes.com/games/wordle/index.html", embed: false },
-  { name: "Little Alchemy 2",   emoji: "⚗️", cat: "Puzzle",   url: "https://littlealchemy2.com", embed: true },
-  { name: "Chess",              emoji: "♟️", cat: "Puzzle",   url: "https://www.chess.com/play/computer", embed: false },
-  { name: "GeoGuessr",          emoji: "🌍", cat: "Puzzle",   url: "https://www.geoguessr.com", embed: false },
-  { name: "Papa's Freezeria",   emoji: "🍦", cat: "Casual",   url: "https://www.coolmathgames.com/0-papas-freezeria", embed: false },
-  { name: "Cookie Clicker",     emoji: "🍪", cat: "Casual",   url: "https://orteil.dashnet.org/cookieclicker/", embed: false },
-  { name: "Skribbl.io",         emoji: "✏️", cat: "Party",    url: "https://skribbl.io",      embed: true },
-  { name: "Gartic Phone",       emoji: "📞", cat: "Party",    url: "https://garticphone.com", embed: false },
+  { name: "Krunker", emoji: "🔫", cat: "Shooter", url: "https://krunker.io" },
+  { name: "Shell Shockers", emoji: "🥚", cat: "Shooter", url: "https://shellshock.io" },
+  { name: "Venge.io", emoji: "💥", cat: "Shooter", url: "https://venge.io" },
+  { name: "ZombsRoyale", emoji: "🧟", cat: "Shooter", url: "https://zombsroyale.io" },
+  { name: "Smash Karts", emoji: "🏎️", cat: "Racing", url: "https://smashkarts.io" },
+  { name: "Moto X3M Winter", emoji: "🏍️", cat: "Racing", url: "https://html5.gamedistribution.com/bcacf81441bd4c7799a622171116ea9d/" },
+  { name: "Moto X3M Pool Party", emoji: "🏊", cat: "Racing", url: "https://html5.gamedistribution.com/f804d079d19f44d3b951ead4588e974a/" },
+  { name: "Moto X3M Spooky Land", emoji: "🎃", cat: "Racing", url: "https://html5.gamedistribution.com/b8a342904608470a9f3382337aca3558/" },
+  { name: "Eggy Car", emoji: "🥚", cat: "Racing", url: "https://html5.gamedistribution.com/59a98bf799ef499d9d7b9285bccaa196/" },
+  { name: "Snow Rider 3D", emoji: "🛷", cat: "Racing", url: "https://html5.gamedistribution.com/3b79a8537ebc414fb4f9672a9b8c68c8/" },
+  { name: "Basket Random", emoji: "🏀", cat: "Sports", url: "https://html5.gamedistribution.com/bf1268dccb5d43e7970bb3edaa54afc8/" },
+  { name: "8 Ball Pro", emoji: "🎱", cat: "Sports", url: "https://html5.gamedistribution.com/20fa5406b00643128250478502fa5453/" },
+  { name: "Slither.io", emoji: "🐍", cat: ".io", url: "https://slither.io" },
+  { name: "Diep.io", emoji: "🔵", cat: ".io", url: "https://diep.io" },
+  { name: "Paper.io 2", emoji: "📄", cat: ".io", url: "https://paper-io.com" },
+  { name: "Hole.io", emoji: "🕳️", cat: ".io", url: "https://hole-io.com" },
+  { name: "MooMoo.io", emoji: "🐄", cat: ".io", url: "https://moomoo.io" },
+  { name: "Territorial.io", emoji: "🗺️", cat: ".io", url: "https://territorial.io" },
+  { name: "Bloxd.io", emoji: "🧱", cat: "Sandbox", url: "https://bloxd.io" },
+  { name: "Minecraft Classic", emoji: "⛏️", cat: "Sandbox", url: "https://classic.minecraft.net" },
+  { name: "Vex 3", emoji: "🏃", cat: "Arcade", url: "https://html5.gamedistribution.com/762c932b4db74c6da0c1d101b2da8be6/" },
+  { name: "Vex 9", emoji: "🦘", cat: "Arcade", url: "https://html5.gamedistribution.com/8d034584a63642dcb89fa3d24ed6e1b1/" },
+  { name: "Fireboy & Watergirl 1", emoji: "🔥", cat: "Puzzle", url: "https://html5.gamedistribution.com/a55c9cc9c21e4fc683c8c6857f3d0c75/" },
+  { name: "Fireboy & Watergirl 2", emoji: "💡", cat: "Puzzle", url: "https://html5.gamedistribution.com/383ad09b92c7446b9113cccc29630517/" },
+  { name: "Fireboy & Watergirl 3", emoji: "🧊", cat: "Puzzle", url: "https://html5.gamedistribution.com/f3a6e1ac0a77412289cbac47658b2b68/" },
+  { name: "Fireboy & Watergirl 5", emoji: "🌊", cat: "Puzzle", url: "https://html5.gamedistribution.com/03f124074b0049f89fdace0cacf8ead5/" },
+  { name: "2048", emoji: "🔢", cat: "Puzzle", url: "https://html5.gamedistribution.com/713d172e6d9645bab2407c23afb038c8/" },
+  { name: "Tetris", emoji: "🟪", cat: "Puzzle", url: "https://tetris.com/play-tetris" },
+  { name: "Little Alchemy 2", emoji: "⚗️", cat: "Puzzle", url: "https://littlealchemy2.com" },
+  { name: "Skribbl.io", emoji: "✏️", cat: "Party", url: "https://skribbl.io" },
 ];
 
 const grid = document.getElementById("grid");
@@ -123,7 +113,7 @@ function render() {
       const b = document.createElement("button");
       b.className = "game";
       b.innerHTML = `<div class="emoji">${g.emoji}</div><div class="name"></div>
-        <div class="meta"><span>${g.cat}</span><span>${g.embed ? "Play here" : "↗ New tab"}</span></div>`;
+        <div class="meta"><span>${g.cat}</span></div>`;
       b.querySelector(".name").textContent = g.name;
       b.onclick = () => play(g);
       grid.appendChild(b);
@@ -131,9 +121,7 @@ function render() {
 }
 
 function play(g) {
-  if (!g.embed) { window.open(g.url, "_blank", "noopener"); return; }
   document.getElementById("title").textContent = g.name;
-  document.getElementById("newtab").href = g.url;
   frame.src = g.url;
   player.classList.add("open");
 }
