@@ -7,7 +7,7 @@
 <style>
   :root {
     --bg: #0f1117; --card: #1a1d27; --card-hover: #242836; --text: #e8eaf0;
-    --muted: #8b90a0; --accent: #5b8cff; --tag: #2a2f3f;
+    --muted: #8b90a0; --accent: #5b8cff; --tag: #2a2f3f; --green: #22c55e;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text);
@@ -15,121 +15,94 @@
   header { padding: 24px 16px 8px; max-width: 1200px; margin: 0 auto; }
   h1 { margin: 0 0 4px; font-size: 28px; }
   header p { margin: 0 0 16px; color: var(--muted); }
+  .join { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: var(--card);
+    border-radius: 12px; padding: 12px; margin-bottom: 14px; }
+  .join b { margin-right: 4px; }
+  .join input { width: 130px; letter-spacing: 4px; text-transform: uppercase; font-weight: 700; text-align: center; }
+  .join button { background: var(--green); color: #052e16; border: 0; border-radius: 8px; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+  .join span { color: var(--muted); font-size: 13px; }
   .controls { display: flex; gap: 8px; flex-wrap: wrap; }
-  input, select { background: var(--card); color: var(--text); border: 1px solid #2d3242;
-    border-radius: 8px; padding: 10px 12px; font-size: 15px; }
-  input { flex: 1; min-width: 180px; }
+  input { background: var(--card); color: var(--text); border: 1px solid #2d3242; border-radius: 8px; padding: 10px 12px; font-size: 15px; }
+  #search { flex: 1; min-width: 180px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .chip { background: var(--tag); color: var(--text); border: 0; border-radius: 99px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+  .chip.on { background: var(--accent); }
   main { max-width: 1200px; margin: 0 auto; padding: 16px;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
-  .game { background: var(--card); border: 0; border-radius: 12px; padding: 16px; color: var(--text);
-    text-align: left; cursor: pointer; font: inherit; display: flex; flex-direction: column; gap: 8px;
-    transition: background .15s, transform .15s; }
-  .game:hover { background: var(--card-hover); transform: translateY(-2px); }
-  .emoji { font-size: 36px; }
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .game { background: var(--card); border-radius: 12px; padding: 14px; color: var(--text); text-decoration: none;
+    display: flex; flex-direction: column; gap: 6px; transition: background .15s, transform .15s; }
+  .game:hover, .game:focus-visible { background: var(--card-hover); transform: translateY(-2px); }
+  .emoji { font-size: 34px; line-height: 1.1; }
   .name { font-weight: 600; }
-  .meta { display: flex; gap: 6px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
-  .meta span { background: var(--tag); padding: 2px 8px; border-radius: 99px; }
-  #player { position: fixed; inset: 0; background: var(--bg); display: none; flex-direction: column; z-index: 10; }
-  #player.open { display: flex; }
-  #bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--card); }
-  #bar strong { flex: 1; }
-  #bar button { background: var(--tag); color: var(--text); border: 0; border-radius: 8px;
-    padding: 8px 12px; font: inherit; cursor: pointer; text-decoration: none; }
-  #frame { flex: 1; border: 0; width: 100%; background: #000; }
-  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px; }
+  .meta { display: flex; gap: 4px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+  .meta span { background: var(--tag); padding: 2px 7px; border-radius: 99px; }
+  .meta .mp { background: #14532d; color: #bbf7d0; }
+  .empty { grid-column: 1 / -1; color: var(--muted); text-align: center; padding: 40px; }
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px; line-height: 1.6; }
+  @media (max-width: 480px) { h1 { font-size: 24px; } main { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
 </style>
 </head>
 <body>
 <header>
   <h1>🎮 Game Hub</h1>
-  <p>Popular web games in one place. Click a game to play.</p>
-  <div class="controls">
-    <input id="search" type="search" placeholder="Search games…" autocomplete="off">
-    <select id="cat"><option value="">All categories</option></select>
-  </div>
+  <p id="count">Games that run right here — no downloads.</p>
+  <form class="join" id="joinForm">
+    <b>🔗 Join a friend</b>
+    <input id="code" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="CODE" aria-label="Room code">
+    <button type="submit">Join</button>
+    <span>Your friend picks a 👥 game, taps “Host online game”, and tells you the code.</span>
+  </form>
+  <div class="controls"><input id="search" type="search" placeholder="Search games…" autocomplete="off"></div>
+  <div class="chips" id="chips"></div>
 </header>
 
 <main id="grid"></main>
 
-<div id="player">
-  <div id="bar">
-    <button id="close">← Back</button>
-    <strong id="title"></strong>
-    <button id="fs">Fullscreen</button>
-  </div>
-  <iframe id="frame" allow="fullscreen; autoplay; gamepad; pointer-lock" allowfullscreen></iframe>
-</div>
+<footer>
+  👥 = two players: on one device, or on two devices online with a room code.<br>
+  2048, Hextris and Clumsy Bird are open-source games included under their licenses (see each game's folder).
+</footer>
 
-<footer>Every game belongs to its developer. Games are loaded from their official sites or GameDistribution.</footer>
-
+<script src="games/list.js"></script>
 <script>
-const GAMES = [
-  { name: "Krunker", emoji: "🔫", cat: "Shooter", url: "https://krunker.io" },
-  { name: "Shell Shockers", emoji: "🥚", cat: "Shooter", url: "https://shellshock.io" },
-  { name: "Venge.io", emoji: "💥", cat: "Shooter", url: "https://venge.io" },
-  { name: "ZombsRoyale", emoji: "🧟", cat: "Shooter", url: "https://zombsroyale.io" },
-  { name: "Smash Karts", emoji: "🏎️", cat: "Racing", url: "https://smashkarts.io" },
-  { name: "Moto X3M Winter", emoji: "🏍️", cat: "Racing", url: "https://html5.gamedistribution.com/bcacf81441bd4c7799a622171116ea9d/" },
-  { name: "Moto X3M Pool Party", emoji: "🏊", cat: "Racing", url: "https://html5.gamedistribution.com/f804d079d19f44d3b951ead4588e974a/" },
-  { name: "Moto X3M Spooky Land", emoji: "🎃", cat: "Racing", url: "https://html5.gamedistribution.com/b8a342904608470a9f3382337aca3558/" },
-  { name: "Eggy Car", emoji: "🥚", cat: "Racing", url: "https://html5.gamedistribution.com/59a98bf799ef499d9d7b9285bccaa196/" },
-  { name: "Snow Rider 3D", emoji: "🛷", cat: "Racing", url: "https://html5.gamedistribution.com/3b79a8537ebc414fb4f9672a9b8c68c8/" },
-  { name: "Basket Random", emoji: "🏀", cat: "Sports", url: "https://html5.gamedistribution.com/bf1268dccb5d43e7970bb3edaa54afc8/" },
-  { name: "8 Ball Pro", emoji: "🎱", cat: "Sports", url: "https://html5.gamedistribution.com/20fa5406b00643128250478502fa5453/" },
-  { name: "Slither.io", emoji: "🐍", cat: ".io", url: "https://slither.io" },
-  { name: "Diep.io", emoji: "🔵", cat: ".io", url: "https://diep.io" },
-  { name: "Paper.io 2", emoji: "📄", cat: ".io", url: "https://paper-io.com" },
-  { name: "Hole.io", emoji: "🕳️", cat: ".io", url: "https://hole-io.com" },
-  { name: "MooMoo.io", emoji: "🐄", cat: ".io", url: "https://moomoo.io" },
-  { name: "Territorial.io", emoji: "🗺️", cat: ".io", url: "https://territorial.io" },
-  { name: "Bloxd.io", emoji: "🧱", cat: "Sandbox", url: "https://bloxd.io" },
-  { name: "Minecraft Classic", emoji: "⛏️", cat: "Sandbox", url: "https://classic.minecraft.net" },
-  { name: "Vex 3", emoji: "🏃", cat: "Arcade", url: "https://html5.gamedistribution.com/762c932b4db74c6da0c1d101b2da8be6/" },
-  { name: "Vex 9", emoji: "🦘", cat: "Arcade", url: "https://html5.gamedistribution.com/8d034584a63642dcb89fa3d24ed6e1b1/" },
-  { name: "Fireboy & Watergirl 1", emoji: "🔥", cat: "Puzzle", url: "https://html5.gamedistribution.com/a55c9cc9c21e4fc683c8c6857f3d0c75/" },
-  { name: "Fireboy & Watergirl 2", emoji: "💡", cat: "Puzzle", url: "https://html5.gamedistribution.com/383ad09b92c7446b9113cccc29630517/" },
-  { name: "Fireboy & Watergirl 3", emoji: "🧊", cat: "Puzzle", url: "https://html5.gamedistribution.com/f3a6e1ac0a77412289cbac47658b2b68/" },
-  { name: "Fireboy & Watergirl 5", emoji: "🌊", cat: "Puzzle", url: "https://html5.gamedistribution.com/03f124074b0049f89fdace0cacf8ead5/" },
-  { name: "2048", emoji: "🔢", cat: "Puzzle", url: "https://html5.gamedistribution.com/713d172e6d9645bab2407c23afb038c8/" },
-  { name: "Tetris", emoji: "🟪", cat: "Puzzle", url: "https://tetris.com/play-tetris" },
-  { name: "Little Alchemy 2", emoji: "⚗️", cat: "Puzzle", url: "https://littlealchemy2.com" },
-  { name: "Skribbl.io", emoji: "✏️", cat: "Party", url: "https://skribbl.io" },
-];
-
 const grid = document.getElementById("grid");
 const search = document.getElementById("search");
-const cat = document.getElementById("cat");
-const player = document.getElementById("player");
-const frame = document.getElementById("frame");
+let cat = "All";
+const cats = ["All", "👥 2 Players", ...[...new Set(CATALOG.map((g) => g.c))].sort()];
+document.getElementById("count").textContent = `${CATALOG.length} games that run right here — ${CATALOG.filter((g) => g.p === 2).length} of them two-player, on one device or two.`;
 
-[...new Set(GAMES.map(g => g.cat))].sort().forEach(c => cat.add(new Option(c, c)));
+const chips = document.getElementById("chips");
+cats.forEach((c) => {
+  const b = document.createElement("button");
+  b.className = "chip" + (c === cat ? " on" : "");
+  b.textContent = c;
+  b.onclick = () => { cat = c; chips.querySelectorAll(".chip").forEach((x) => x.classList.toggle("on", x === b)); render(); };
+  chips.appendChild(b);
+});
 
 function render() {
   const q = search.value.trim().toLowerCase();
+  const list = CATALOG.filter((g) => (cat === "All" || (cat === "👥 2 Players" ? g.p === 2 : g.c === cat)) && g.t.toLowerCase().includes(q))
+    .sort((a, b) => a.t.localeCompare(b.t));
   grid.innerHTML = "";
-  GAMES.filter(g => (!cat.value || g.cat === cat.value) && g.name.toLowerCase().includes(q))
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .forEach(g => {
-      const b = document.createElement("button");
-      b.className = "game";
-      b.innerHTML = `<div class="emoji">${g.emoji}</div><div class="name"></div>
-        <div class="meta"><span>${g.cat}</span></div>`;
-      b.querySelector(".name").textContent = g.name;
-      b.onclick = () => play(g);
-      grid.appendChild(b);
-    });
+  if (!list.length) { grid.innerHTML = '<div class="empty">No games match that.</div>'; return; }
+  for (const g of list) {
+    const a = document.createElement("a");
+    a.className = "game";
+    a.href = g.url || "play.html?g=" + g.id;
+    a.innerHTML = `<div class="emoji"></div><div class="name"></div><div class="meta"><span></span>${g.p === 2 ? '<span class="mp">👥 Online 2P</span>' : ""}</div>`;
+    a.querySelector(".emoji").textContent = g.e;
+    a.querySelector(".name").textContent = g.t;
+    a.querySelector(".meta span").textContent = g.c;
+    grid.appendChild(a);
+  }
 }
-
-function play(g) {
-  document.getElementById("title").textContent = g.name;
-  frame.src = g.url;
-  player.classList.add("open");
-}
-
-document.getElementById("close").onclick = () => { frame.src = "about:blank"; player.classList.remove("open"); };
-document.getElementById("fs").onclick = () => frame.requestFullscreen?.();
 search.oninput = render;
-cat.onchange = render;
+document.getElementById("joinForm").onsubmit = (e) => {
+  e.preventDefault();
+  const code = document.getElementById("code").value.trim().toUpperCase();
+  if (code.length === 5) location.href = "play.html?join=" + encodeURIComponent(code);
+};
 render();
 </script>
 </body>

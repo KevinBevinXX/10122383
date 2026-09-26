@@ -1,0 +1,1 @@
+Modified from the original: removed Google ads and analytics scripts.

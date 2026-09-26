@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<!-- Visual QA: shows each game's final test frame. tools/gallery.html?g=a,b,c -->
+<html><body style="margin:0;background:#222;display:grid;grid-template-columns:repeat(3,1fr);gap:4px">
+<script>
+for (const id of new URLSearchParams(location.search).get("g").split(",")) {
+  const d = document.createElement("div");
+  d.innerHTML = `<div style="color:#fff;font:12px sans-serif">${id}</div><iframe src="../play.html?g=${id}&test=1" style="width:100%;height:300px;border:0"></iframe>`;
+  document.body.appendChild(d);
+}
+</script></body></html>
