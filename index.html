@@ -3,105 +3,257 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Game Hub</title>
+<title>Game Hub — Free browser games</title>
+<meta name="description" content="Over 100 free games that run in your browser. Play solo, against the computer, or with a friend on another device.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236d5dfc'/%3E%3Cpath d='M18 26h28a8 8 0 0 1 8 8v4a6 6 0 0 1-11 3l-3-4H24l-3 4a6 6 0 0 1-11-3v-4a8 8 0 0 1 8-8z' fill='%23fff'/%3E%3Ccircle cx='42' cy='33' r='2.5' fill='%236d5dfc'/%3E%3Cpath d='M20 33h8M24 29v8' stroke='%236d5dfc' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
   :root {
-    --bg: #0f1117; --card: #1a1d27; --card-hover: #242836; --text: #e8eaf0;
-    --muted: #8b90a0; --accent: #5b8cff; --tag: #2a2f3f; --green: #22c55e;
+    --bg: #0b0d14; --bg2: #11141f; --card: #161a28; --card2: #1d2233; --line: #242a3d;
+    --text: #eef0f7; --muted: #8e95ad; --accent: #6d5dfc; --accent2: #9b8cff; --green: #22c55e;
+    --radius: 14px; --shadow: 0 10px 30px rgba(0, 0, 0, .35);
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  header { padding: 24px 16px 8px; max-width: 1200px; margin: 0 auto; }
-  h1 { margin: 0 0 4px; font-size: 28px; }
-  header p { margin: 0 0 16px; color: var(--muted); }
-  .join { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: var(--card);
-    border-radius: 12px; padding: 12px; margin-bottom: 14px; }
-  .join b { margin-right: 4px; }
-  .join input { width: 130px; letter-spacing: 4px; text-transform: uppercase; font-weight: 700; text-align: center; }
-  .join button { background: var(--green); color: #052e16; border: 0; border-radius: 8px; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
-  .join span { color: var(--muted); font-size: 13px; }
-  .controls { display: flex; gap: 8px; flex-wrap: wrap; }
-  input { background: var(--card); color: var(--text); border: 1px solid #2d3242; border-radius: 8px; padding: 10px 12px; font-size: 15px; }
-  #search { flex: 1; min-width: 180px; }
-  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-  .chip { background: var(--tag); color: var(--text); border: 0; border-radius: 99px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
-  .chip.on { background: var(--accent); }
-  main { max-width: 1200px; margin: 0 auto; padding: 16px;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-  .game { background: var(--card); border-radius: 12px; padding: 14px; color: var(--text); text-decoration: none;
-    display: flex; flex-direction: column; gap: 6px; transition: background .15s, transform .15s; }
-  .game:hover, .game:focus-visible { background: var(--card-hover); transform: translateY(-2px); }
-  .emoji { font-size: 34px; line-height: 1.1; }
-  .name { font-weight: 600; }
-  .meta { display: flex; gap: 4px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
-  .meta span { background: var(--tag); padding: 2px 7px; border-radius: 99px; }
-  .meta .mp { background: #14532d; color: #bbf7d0; }
-  .empty { grid-column: 1 / -1; color: var(--muted); text-align: center; padding: 40px; }
-  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px; line-height: 1.6; }
-  @media (max-width: 480px) { h1 { font-size: 24px; } main { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- nav ---------- */
+  nav { position: sticky; top: 0; z-index: 20; background: rgba(11, 13, 20, .82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; gap: 16px; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 18px; letter-spacing: -.02em; white-space: nowrap; }
+  .logo svg { width: 34px; height: 34px; }
+  .search { flex: 1; max-width: 460px; margin-left: auto; position: relative; }
+  .search input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg2); color: var(--text); padding: 0 14px 0 38px; font: inherit; outline: none; transition: border-color .15s; }
+  .search input:focus { border-color: var(--accent); }
+  .search svg { position: absolute; left: 12px; top: 11px; width: 18px; height: 18px; color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 10px; border: 0; font: inherit; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; transition: transform .12s, background .15s, filter .15s; }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { filter: brightness(1.12); }
+  .btn-ghost { background: var(--card2); color: var(--text); }
+  .btn-ghost:hover { background: #262c42; }
+  .btn-lg { height: 48px; padding: 0 22px; font-size: 16px; border-radius: 12px; }
+
+  /* ---------- hero ---------- */
+  .hero { margin-top: 24px; border-radius: 22px; overflow: hidden; position: relative; min-height: 320px; display: grid; grid-template-columns: 1.1fr 1fr; background: radial-gradient(120% 140% at 100% 0%, #ff7a18 0%, #d6336c 38%, #6d28d9 75%, #1e1b4b 100%); box-shadow: var(--shadow); }
+  .hero-copy { padding: 44px 40px; position: relative; z-index: 1; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 6px; background: rgba(0, 0, 0, .25); border: 1px solid rgba(255, 255, 255, .2); padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .hero h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.02; letter-spacing: -.03em; margin: 16px 0 12px; }
+  .hero p { margin: 0 0 24px; max-width: 440px; color: rgba(255, 255, 255, .85); font-size: 16px; }
+  .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hero-cta .btn-primary { background: #fff; color: #1e1b4b; }
+  .hero-cta .btn-ghost { background: rgba(0, 0, 0, .28); color: #fff; border: 1px solid rgba(255, 255, 255, .25); }
+  .hero-art { position: relative; }
+  .hero-art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .stats { display: flex; gap: 28px; margin-top: 28px; }
+  .stats b { display: block; font-size: 24px; letter-spacing: -.02em; }
+  .stats span { font-size: 13px; color: rgba(255, 255, 255, .75); }
+
+  /* ---------- sections ---------- */
+  section { margin-top: 40px; }
+  .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .sec-head h2 { font-size: 22px; letter-spacing: -.02em; margin: 0; }
+  .sec-head p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+  .row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(200px, 1fr); gap: 14px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: #2e3550 transparent; }
+  .row::-webkit-scrollbar { height: 8px; } .row::-webkit-scrollbar-thumb { background: #2e3550; border-radius: 99px; } .row::-webkit-scrollbar-track { background: transparent; }
+  .row > * { scroll-snap-align: start; }
+
+  /* ---------- join panel ---------- */
+  .join { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; background: linear-gradient(135deg, #0f2a1f, #102033); border: 1px solid #1f3b35; border-radius: var(--radius); padding: 22px 24px; }
+  .join h3 { margin: 0 0 4px; font-size: 18px; }
+  .join p { margin: 0; color: #a7c4bb; font-size: 14px; }
+  .join form { display: flex; gap: 8px; }
+  .join input { width: 150px; height: 48px; border-radius: 12px; border: 1px solid #2b5247; background: #0b1a17; color: #fff; text-align: center; font: 700 20px/1 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .3em; text-transform: uppercase; outline: none; }
+  .join input:focus { border-color: var(--green); }
+  .join .btn { background: var(--green); color: #052e16; height: 48px; }
+  .steps { display: flex; gap: 18px; margin-top: 12px; flex-wrap: wrap; }
+  .steps div { display: flex; gap: 8px; align-items: center; font-size: 13px; color: #cde3dc; }
+  .steps i { font-style: normal; width: 22px; height: 22px; border-radius: 50%; background: #1e4d40; display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+
+  /* ---------- filters + grid ---------- */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+  .tab { height: 34px; padding: 0 14px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .tab:hover { color: var(--text); border-color: #36405c; }
+  .tab.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .filters .count { margin-left: auto; color: var(--muted); font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+
+  .card { display: block; text-decoration: none; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: transform .18s, border-color .18s, box-shadow .18s; }
+  .card:hover, .card:focus-visible { transform: translateY(-4px); border-color: #3a4462; box-shadow: var(--shadow); outline: none; }
+  .thumb { aspect-ratio: 16 / 10; position: relative; display: grid; place-items: center; overflow: hidden; }
+  .thumb::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, .28), transparent 55%), repeating-linear-gradient(135deg, rgba(255, 255, 255, .05) 0 10px, transparent 10px 20px); }
+  .thumb .emo { font-size: 54px; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .35)); transition: transform .25s; position: relative; }
+  .card:hover .emo { transform: scale(1.12) rotate(-4deg); }
+  .thumb .play { position: absolute; right: 10px; bottom: 10px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, .95); display: grid; place-items: center; opacity: 0; transform: translateY(6px); transition: all .2s; }
+  .card:hover .play { opacity: 1; transform: none; }
+  .play svg { width: 14px; height: 14px; margin-left: 2px; color: #111; }
+  .badge2p { position: absolute; left: 10px; top: 10px; background: rgba(0, 0, 0, .55); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; backdrop-filter: blur(4px); }
+  .info { padding: 12px 14px 14px; }
+  .info .t { font-weight: 700; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .info .c { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 60px 0; }
+
+  footer { margin-top: 64px; border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 13px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+
+  @media (max-width: 820px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-art { height: 150px; order: -1; }
+    .hero-copy { padding: 24px; }
+    .join { grid-template-columns: minmax(0, 1fr); padding: 18px; }
+    .join form { width: 100%; } .join input { flex: 1; width: auto; min-width: 0; }
+    .logo span { display: none; }
+    nav .btn-ghost { display: none; }
+  }
+  @media (max-width: 480px) {
+    .wrap { padding: 0 16px; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .thumb .emo { font-size: 42px; }
+    .stats { gap: 18px; }
+    .filters { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+    .filters .count { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 </style>
 </head>
 <body>
-<header>
-  <h1>🎮 Game Hub</h1>
-  <p id="count">Games that run right here — no downloads.</p>
-  <form class="join" id="joinForm">
-    <b>🔗 Join a friend</b>
-    <input id="code" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="CODE" aria-label="Room code">
-    <button type="submit">Join</button>
-    <span>Your friend picks a 👥 game, taps “Host online game”, and tells you the code.</span>
-  </form>
-  <div class="controls"><input id="search" type="search" placeholder="Search games…" autocomplete="off"></div>
-  <div class="chips" id="chips"></div>
-</header>
+<nav>
+  <div class="wrap">
+    <a class="logo" href="./">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#6d5dfc"/><path d="M18 26h28a8 8 0 0 1 8 8v4a6 6 0 0 1-11 3l-3-4H24l-3 4a6 6 0 0 1-11-3v-4a8 8 0 0 1 8-8z" fill="#fff"/><circle cx="42" cy="33" r="2.5" fill="#6d5dfc"/><path d="M20 33h8M24 29v8" stroke="#6d5dfc" stroke-width="3" stroke-linecap="round"/></svg>
+      <span>Game Hub</span>
+    </a>
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="search" type="search" placeholder="Search 100+ games" autocomplete="off" aria-label="Search games">
+    </label>
+    <a class="btn btn-ghost" href="#friends">Play with a friend</a>
+  </div>
+</nav>
 
-<main id="grid"></main>
+<main class="wrap">
+  <header class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">★ Featured</span>
+      <h1>Hoop Brawl</h1>
+      <p>Fast 1-on-1 basketball. Jump shots, dunks and steals — play the computer, a friend on the same keyboard, or a friend on another device.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="play.html?g=hoop-brawl">▶ Play now</a>
+        <a class="btn btn-ghost btn-lg" href="#friends">Challenge a friend</a>
+      </div>
+      <div class="stats"><div><b id="statGames">109</b><span>games</span></div><div><b id="stat2p">36</b><span>two-player</span></div><div><b>0</b><span>downloads</span></div></div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 400 320" preserveAspectRatio="xMidYMid slice">
+        <circle cx="300" cy="80" r="120" fill="rgba(255,255,255,.08)"/>
+        <rect x="318" y="60" width="8" height="202" fill="rgba(255,255,255,.7)"/>
+        <rect x="300" y="46" width="44" height="60" rx="4" fill="rgba(255,255,255,.9)"/>
+        <path d="M268 110h54" stroke="#ff7a18" stroke-width="6" stroke-linecap="round"/>
+        <path d="M272 112l6 36M284 112l2 36M296 112l-2 36M308 112l-4 36M318 112l-8 36" stroke="rgba(255,255,255,.8)" stroke-width="2"/>
+        <circle cx="200" cy="96" r="20" fill="#f97316"/><path d="M180 96h40M200 76v40" stroke="#7c2d12" stroke-width="2.5"/>
+        <g transform="translate(130 150)"><circle cx="0" cy="0" r="30" fill="#f2c9a0"/><rect x="-30" y="-34" width="60" height="16" rx="4" fill="#1e40af"/><circle cx="10" cy="-2" r="4" fill="#111"/><rect x="-18" y="30" width="36" height="44" rx="6" fill="#3b82f6"/><rect x="-16" y="74" width="12" height="30" rx="4" fill="#1e40af"/><rect x="4" y="74" width="12" height="30" rx="4" fill="#1e40af"/></g>
+        <path d="M150 170 Q 180 110 196 104" stroke="rgba(255,255,255,.5)" stroke-width="3" stroke-dasharray="4 8" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </header>
+
+  <section id="recentSec" hidden>
+    <div class="sec-head"><div><h2>Continue playing</h2></div></div>
+    <div class="row" id="recent"></div>
+  </section>
+
+  <section id="friends">
+    <div class="join">
+      <div>
+        <h3>Play with a friend on another device</h3>
+        <p>No accounts, no installs — just a 5-letter room code.</p>
+        <div class="steps"><div><i>1</i>One of you opens a 2-player game</div><div><i>2</i>Tap “Host online game”</div><div><i>3</i>The other enters the code here</div></div>
+      </div>
+      <form id="joinForm">
+        <input id="code" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="CODE" aria-label="Room code">
+        <button class="btn" type="submit">Join</button>
+      </form>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div><h2>Two-player favourites</h2><p>Same keyboard, or two devices online.</p></div></div>
+    <div class="row" id="twoRow"></div>
+  </section>
+
+  <section id="all">
+    <div class="sec-head"><div><h2>All games</h2></div></div>
+    <div class="filters" id="tabs"><span class="count" id="count"></span></div>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
 
 <footer>
-  👥 = two players: on one device, or on two devices online with a room code.<br>
-  2048, Hextris and Clumsy Bird are open-source games included under their licenses (see each game's folder).
+  <div class="wrap">
+    <div><b style="color:var(--text)">Game Hub</b> · Free games that run in your browser.</div>
+    <div>2048, Hextris and Clumsy Bird are open-source games included under their licenses.</div>
+  </div>
 </footer>
 
 <script src="games/list.js"></script>
 <script>
-const grid = document.getElementById("grid");
-const search = document.getElementById("search");
-let cat = "All";
-const cats = ["All", "👥 2 Players", ...[...new Set(CATALOG.map((g) => g.c))].sort()];
-document.getElementById("count").textContent = `${CATALOG.length} games that run right here — ${CATALOG.filter((g) => g.p === 2).length} of them two-player, on one device or two.`;
+const CAT_ART = {
+  "Sports": ["#16a34a", "#065f46"], "Action": ["#ef4444", "#7f1d1d"], "Arcade": ["#8b5cf6", "#3b0764"], "Racing": ["#f97316", "#7c2d12"],
+  "Puzzle": ["#06b6d4", "#164e63"], "Board & Card": ["#a16207", "#422006"], "Word": ["#eab308", "#713f12"], ".io": ["#ec4899", "#831843"], "Casual": ["#3b82f6", "#1e3a8a"],
+};
+const FAV2P = ["hoop-brawl", "header-soccer", "stick-fight", "tank-duel", "bomb-arena", "air-hockey", "chess", "pool", "slime-volley", "duel-racer", "battleship", "connect-four"];
+const byId = Object.fromEntries(CATALOG.map((g) => [g.id || g.url, g]));
+const href = (g) => g.url || "play.html?g=" + g.id;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-const chips = document.getElementById("chips");
+function card(g) {
+  const [a, b] = CAT_ART[g.c] || ["#475569", "#0f172a"];
+  return `<a class="card" href="${href(g)}">
+    <div class="thumb" style="background:linear-gradient(135deg,${a},${b})">
+      ${g.p === 2 ? '<span class="badge2p">👥 2P</span>' : ""}
+      <span class="emo">${esc(g.e)}</span>
+      <span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg></span>
+    </div>
+    <div class="info"><div class="t">${esc(g.t)}</div><div class="c">${esc(g.c)}${g.p === 2 ? " · vs CPU or friend" : ""}</div></div>
+  </a>`;
+}
+
+document.getElementById("statGames").textContent = CATALOG.length;
+document.getElementById("stat2p").textContent = CATALOG.filter((g) => g.p === 2).length;
+document.getElementById("twoRow").innerHTML = FAV2P.map((id) => byId[id]).filter(Boolean).map(card).join("");
+
+// recently played (recorded by the game page on this device)
+try {
+  const recent = JSON.parse(localStorage.getItem("recent") || "[]").map((id) => byId[id]).filter(Boolean);
+  if (recent.length) { document.getElementById("recentSec").hidden = false; document.getElementById("recent").innerHTML = recent.slice(0, 8).map(card).join(""); }
+} catch (e) {}
+
+// category tabs + search
+let cat = "All";
+const cats = ["All", "2 Players", ...[...new Set(CATALOG.map((g) => g.c))].sort()];
+const tabs = document.getElementById("tabs"), countEl = document.getElementById("count");
 cats.forEach((c) => {
   const b = document.createElement("button");
-  b.className = "chip" + (c === cat ? " on" : "");
-  b.textContent = c;
-  b.onclick = () => { cat = c; chips.querySelectorAll(".chip").forEach((x) => x.classList.toggle("on", x === b)); render(); };
-  chips.appendChild(b);
+  b.className = "tab" + (c === cat ? " on" : "");
+  b.textContent = c === "2 Players" ? "👥 2 Players" : c;
+  b.onclick = () => { cat = c; tabs.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x === b)); render(); };
+  tabs.insertBefore(b, countEl);
 });
-
+const search = document.getElementById("search");
 function render() {
   const q = search.value.trim().toLowerCase();
-  const list = CATALOG.filter((g) => (cat === "All" || (cat === "👥 2 Players" ? g.p === 2 : g.c === cat)) && g.t.toLowerCase().includes(q))
+  const list = CATALOG.filter((g) => (cat === "All" || (cat === "2 Players" ? g.p === 2 : g.c === cat)) && (g.t.toLowerCase().includes(q) || g.c.toLowerCase().includes(q)))
     .sort((a, b) => a.t.localeCompare(b.t));
-  grid.innerHTML = "";
-  if (!list.length) { grid.innerHTML = '<div class="empty">No games match that.</div>'; return; }
-  for (const g of list) {
-    const a = document.createElement("a");
-    a.className = "game";
-    a.href = g.url || "play.html?g=" + g.id;
-    a.innerHTML = `<div class="emoji"></div><div class="name"></div><div class="meta"><span></span>${g.p === 2 ? '<span class="mp">👥 Online 2P</span>' : ""}</div>`;
-    a.querySelector(".emoji").textContent = g.e;
-    a.querySelector(".name").textContent = g.t;
-    a.querySelector(".meta span").textContent = g.c;
-    grid.appendChild(a);
-  }
+  countEl.textContent = `${list.length} game${list.length === 1 ? "" : "s"}`;
+  document.getElementById("grid").innerHTML = list.length ? list.map(card).join("") : '<div class="empty">No games match “' + esc(q) + '”.</div>';
 }
-search.oninput = render;
+search.addEventListener("input", () => { render(); if (search.value && scrollY < document.getElementById("all").offsetTop - 120) document.getElementById("all").scrollIntoView(); });
 document.getElementById("joinForm").onsubmit = (e) => {
   e.preventDefault();
   const code = document.getElementById("code").value.trim().toUpperCase();
-  if (code.length === 5) location.href = "play.html?join=" + encodeURIComponent(code);
+  if (/^[A-Z0-9]{5}$/.test(code)) location.href = "play.html?join=" + code;
+  else document.getElementById("code").focus();
 };
 render();
 </script>

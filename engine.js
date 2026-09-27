@@ -372,6 +372,8 @@
   function setup() {
     W = typeof def.w === "number" ? def.w : 800; H = typeof def.h === "number" ? def.h : 450;
     document.title = def.title + " · Game Hub";
+    // remember recently played games for the home page's "Continue playing" row
+    try { const r = JSON.parse(localStorage.getItem("recent") || "[]").filter((x) => x !== def.id); r.unshift(def.id); localStorage.setItem("recent", JSON.stringify(r.slice(0, 12))); } catch (err) {}
     $("title").textContent = def.title;
     canvas = $("game");
     c = canvas.getContext("2d");
